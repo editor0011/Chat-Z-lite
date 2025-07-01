@@ -1,0 +1,3086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat z - Modern Social App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            --dark-bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --online: #10b981;
+            --away: #f59e0b;
+            --offline: #94a3b8;
+        }
+        
+        .theme-light {
+            --primary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #f8f9fa;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-light: #343a40;
+            --text-muted: #6c757d;
+            --accent: #4facfe;
+        }
+        
+        .theme-dark-blue {
+            --primary-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 100%);
+            --dark-bg: #0a1929;
+            --card-bg: rgba(18, 33, 53, 0.8);
+            --text-light: #e2edf7;
+            --text-muted: #8ca0b5;
+            --accent: #2c5364;
+        }
+        
+        .theme-purple {
+            --primary-gradient: linear-gradient(135deg, #5c258d 0%, #4389a2 100%);
+            --dark-bg: #1a1a2e;
+            --card-bg: rgba(34, 40, 77, 0.8);
+            --text-light: #e6e6ff;
+            --text-muted: #a3a3c2;
+            --accent: #5c258d;
+        }
+        
+        body {
+            background: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .auth-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        
+        .auth-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .auth-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px 15px;
+            color: var(--text-light);
+            font-size: 1rem;
+            width: 100%;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .auth-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+        }
+        
+        .auth-footer {
+            margin-top: 20px;
+            color: var(--text-muted);
+        }
+        
+        .auth-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+        
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .app-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .app-name i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .notification-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: var(--text-light);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .notification-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .notification-btn .badge {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            padding: 3px 6px;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 40px 20px 30px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: var(--text-muted);
+        }
+        
+        .cta-button {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(37, 117, 252, 0.4);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 15px;
+            border-radius: 20px;
+            position: relative;
+            min-width: 60px;
+        }
+        
+        .nav-btn.active, .nav-btn:hover {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .nav-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .profile-page {
+            display: none;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            background: var(--primary-gradient);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .username {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+        
+        .stat-btn {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            min-width: 130px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-btn:hover {
+            transform: translateY(-5px);
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        .stat-btn h3 {
+            font-size: 1.8rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .stat-btn p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .edit-profile-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .edit-profile-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(37, 117, 252, 0.4);
+        }
+        
+        .edit-profile-page {
+            display: none;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .edit-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .edit-header h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .profile-form {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .profile-pic-edit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .profile-pic-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+            background: var(--primary-gradient);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .file-input-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .file-input-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .word-count {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        
+        .save-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(37, 117, 252, 0.4);
+        }
+        
+        .list-page {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .search-container {
+            position: sticky;
+            top: 80px;
+            background: var(--dark-bg);
+            padding: 20px 0;
+            z-index: 90;
+        }
+        
+        .search-bar {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 10px 15px;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .search-bar i {
+            color: var(--text-muted);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 1rem;
+            width: 100%;
+            outline: none;
+        }
+        
+        .list-title {
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+            color: var(--text-light);
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .virtual-list {
+            height: calc(100vh - 250px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .friend-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+        }
+        
+        .friend-card:hover {
+            transform: translateX(5px);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            background: var(--primary-gradient);
+        }
+        
+        .friend-info {
+            flex: 1;
+        }
+        
+        .friend-name {
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 3px;
+        }
+        
+        .friend-status {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .online {
+            background: var(--online);
+        }
+        
+        .away {
+            background: var(--away);
+        }
+        
+        .offline {
+            background: var(--offline);
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .chat-page {
+            display: none;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            height: calc(100vh - 160px);
+            box-sizing: border-box;
+        }
+        
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+        
+        .chat-header-back {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .chat-header-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        
+        .chat-header-info {
+            flex: 1;
+        }
+        
+        .chat-header-name {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .chat-header-status {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message-incoming {
+            background: var(--card-bg);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            margin-right: auto;
+        }
+        
+        .message-outgoing {
+            background: var(--primary-gradient);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+            margin-left: auto;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        /* Updated Chat Input Container */
+        .chat-input-container {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 10px 15px;
+            margin-top: 10px;
+            position: relative;
+        }
+        
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 1rem;
+            padding: 10px 15px;
+            outline: none;
+            max-height: 120px;
+            overflow-y: auto;
+            resize: none;
+        }
+        
+        .send-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .unread-badge {
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-align: center;
+        }
+        
+        .search-results {
+            margin-top: 20px;
+        }
+        
+        .user-result {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .user-result-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            background: var(--primary-gradient);
+        }
+        
+        .user-result-info {
+            flex: 1;
+        }
+        
+        .user-result-name {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .user-result-email {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .user-result-action {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .suggested-friends-container {
+            overflow-x: auto;
+            padding: 15px 0;
+            margin-top: 20px;
+        }
+        
+        .suggested-friends {
+            display: flex;
+            gap: 15px;
+            padding-bottom: 10px;
+        }
+        
+        .suggested-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-width: 180px;
+            flex-shrink: 0;
+        }
+        
+        .suggested-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .suggested-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 10px;
+            background: var(--primary-gradient);
+        }
+        
+        .suggested-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .suggested-bio {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            height: 40px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .suggested-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .settings-page {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .theme-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .theme-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            background: var(--card-bg);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .theme-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .theme-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .theme-btn .theme-name {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .theme-btn .theme-desc {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        
+        .notification-page {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .notification-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .notification-card.unread {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .notification-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .notification-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .notification-time {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .notification-content {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        
+        /* NEW STYLES FOR ADDED FEATURES */
+        .verified-badge {
+            color: #3b82f6;
+            margin-left: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .profile-views-section {
+            margin-top: 30px;
+        }
+        
+        .viewer-card {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .viewer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+        
+        .note-container {
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent);
+            position: relative;
+        }
+        
+        .note-reactions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .reaction-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            padding: 5px 10px;
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .mutual-friends {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .mutual-friend {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+        
+        .confession-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .leaderboard-card {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .leaderboard-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .typing-indicator {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 5px 15px;
+            display: none;
+        }
+        
+        .note-has-ring {
+            border: 3px solid #3b82f6;
+        }
+        
+        .reaction-count {
+            font-size: 0.8rem;
+            margin-left: 3px;
+        }
+        
+        .confession-reply {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        
+        .explore-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-stats {
+                gap: 15px;
+            }
+            
+            .stat-btn {
+                min-width: 110px;
+                padding: 12px;
+            }
+            
+            .stat-btn h3 {
+                font-size: 1.5rem;
+            }
+            
+            .theme-options {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .nav-btn span {
+                display: none;
+            }
+            
+            .nav-btn i {
+                font-size: 1.8rem;
+                margin-bottom: 0;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .app-name {
+                font-size: 1.3rem;
+            }
+            
+            .profile-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stat-btn {
+                width: 100%;
+            }
+            
+            .auth-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Pages -->
+    <div class="auth-container" id="login-page">
+        <div class="auth-card">
+            <h1 class="auth-title">Welcome to Chat z</h1>
+            <p class="auth-subtitle">Connect with friends instantly</p>
+            
+            <form class="auth-form" id="login-form">
+                <input type="email" class="form-input" id="login-email" placeholder="Email" required>
+                <input type="password" class="form-input" id="login-password" placeholder="Password" required>
+                <button type="submit" class="auth-btn">Login</button>
+                <div class="error-message" id="login-error"></div>
+            </form>
+            
+            <div class="auth-footer">
+                Don't have an account? <a href="#" class="auth-link" onclick="showAuthPage('register-page')">Create one</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="auth-container" id="register-page" style="display: none;">
+        <div class="auth-card">
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Join our community today</p>
+            
+            <form class="auth-form" id="register-form">
+                <input type="text" class="form-input" id="register-name" placeholder="Full Name" required>
+                <input type="email" class="form-input" id="register-email" placeholder="Email" required>
+                <input type="password" class="form-input" id="register-password" placeholder="Password (min 6 chars)" required>
+                <div class="form-group">
+                    <label for="invite-code">Invite Code (Optional)</label>
+                    <input type="text" class="form-input" id="invite-code" placeholder="Enter invite code">
+                </div>
+                <button type="submit" class="auth-btn">Create Account</button>
+                <div class="error-message" id="register-error"></div>
+            </form>
+            
+            <div class="auth-footer">
+                Already have an account? <a href="#" class="auth-link" onclick="showAuthPage('login-page')">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Content (hidden until authenticated) -->
+    <div id="app-content" style="display: none;">
+        <!-- Header with App Name and Notification -->
+        <header class="app-header">
+            <div class="app-name">
+                <i class="fas fa-comment-dots"></i>
+                Chat z
+            </div>
+            <div class="header-icons">
+                <button class="notification-btn" onclick="showPage('notifications-page')">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notification-badge">0</span>
+                </button>
+                <button class="notification-btn" onclick="showPage('settings-page')">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Home Page Content -->
+        <div class="container" id="home-page">
+            <button class="explore-btn" onclick="showPage('explore-page')">
+                <i class="fas fa-compass"></i> Explore
+            </button>
+            
+            <div class="hero">
+                <h1>Connect with Friends Instantly</h1>
+                <p class="subtitle">Chat z brings people together with seamless messaging</p>
+                <button class="cta-button" onclick="showPage('chat-list-page')">Start Chatting</button>
+            </div>
+            
+            <!-- Suggested Friends Section -->
+            <div class="suggested-section">
+                <h2 class="list-title">Suggested Friends</h2>
+                <div class="suggested-friends-container">
+                    <div class="suggested-friends" id="suggested-friends">
+                        <!-- Suggested friends will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            
+            <footer>
+                <p>Get starting 10 users verified after reach first 100 followers</p>
+            </footer>
+        </div>
+
+        <!-- Profile Page -->
+        <div class="profile-page" id="profile-page">
+            <div class="profile-header">
+                <img src="" alt="Profile" class="profile-pic" id="profile-pic">
+                <h2 class="username" id="username">Loading...</h2>
+                
+                <div class="profile-stats">
+                    <div class="stat-btn" onclick="showPage('friends-page')">
+                        <h3 id="friends-count">0</h3>
+                        <p>Friends</p>
+                    </div>
+                    
+                    <div class="stat-btn" onclick="showPage('followers-page')">
+                        <h3 id="followers-count">0</h3>
+                        <p>Followers</p>
+                    </div>
+                </div>
+                
+                <button class="edit-profile-btn" id="edit-profile-btn">
+                    <i class="fas fa-edit"></i>
+                    Edit Profile
+                </button>
+            </div>
+            
+            <div class="profile-info">
+                <div class="feature-card">
+                    <h3>About Me</h3>
+                    <p id="user-bio">Loading...</p>
+                </div>
+                
+                <!-- Note Container -->
+                <div class="note-container" id="note-container" style="display: none;">
+                    <h3>Personal Note</h3>
+                    <p id="user-note">Loading note...</p>
+                    <div class="note-reactions" id="note-reactions">
+                        <!-- Reactions will be added here -->
+                    </div>
+                </div>
+                
+                <!-- Mutual Friends Section -->
+                <div class="mutual-friends-section">
+                    <h3>Mutual Friends</h3>
+                    <div class="mutual-friends" id="mutual-friends-list">
+                        <!-- Mutual friends will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Profile Views Section -->
+                <div class="profile-views-section">
+                    <h3>Recent Profile Views</h3>
+                    <div id="profile-views-list">
+                        <!-- Profile viewers will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Page -->
+        <div class="edit-profile-page" id="edit-profile-page">
+            <div class="edit-header">
+                <h2>Edit Your Profile</h2>
+                <p>Update your profile information below</p>
+            </div>
+            
+            <div class="profile-form">
+                <div class="profile-pic-edit">
+                    <img src="" alt="Profile Preview" class="profile-pic-preview" id="profile-pic-preview">
+                    <div class="file-input-wrapper">
+                        <button class="file-input-btn">
+                            <i class="fas fa-camera"></i> Change Profile Picture
+                        </button>
+                        <input type="file" id="profile-pic-input" accept="image/*">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username-input">Username</label>
+                    <input type="text" id="username-input" class="form-control" placeholder="Enter your name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="bio-input">Bio (Describe yourself in 50 words)</label>
+                    <textarea id="bio-input" placeholder="Tell others about yourself"></textarea>
+                    <div class="word-count"><span id="word-count">0</span>/50 words</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="note-input">Personal Note (Visible to friends)</label>
+                    <textarea id="note-input" placeholder="Add a personal note..."></textarea>
+                    <div class="word-count"><span id="note-word-count">0</span>/100 words</div>
+                </div>
+                
+                <button class="save-btn" id="save-profile-btn">
+                    <i class="fas fa-save"></i>
+                    Save Changes
+                </button>
+                <div class="error-message" id="profile-error"></div>
+            </div>
+        </div>
+
+        <!-- Friends Page -->
+        <div class="list-page" id="friends-page">
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="friend-search-input" placeholder="Search friends..." oninput="searchFriends()">
+                </div>
+            </div>
+            
+            <h2 class="list-title">All Friends (<span id="friends-count-title">0</span>)</h2>
+            
+            <div class="virtual-list" id="friends-list">
+                <!-- Friends will be generated dynamically -->
+            </div>
+        </div>
+
+        <!-- Followers Page -->
+        <div class="list-page" id="followers-page">
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="follower-search-input" placeholder="Search followers..." oninput="searchFollowers()">
+                </div>
+            </div>
+            
+            <h2 class="list-title">All Followers (<span id="followers-count-title">0</span>)</h2>
+            
+            <div class="virtual-list" id="followers-list">
+                <!-- Followers will be generated dynamically -->
+            </div>
+        </div>
+
+        <!-- Chat List Page -->
+        <div class="list-page" id="chat-list-page">
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="chat-search-input" placeholder="Search chats..." oninput="searchChats()">
+                </div>
+            </div>
+            
+            <h2 class="list-title">Messages</h2>
+            
+            <div class="virtual-list" id="chat-list">
+                <!-- Chat list will be generated dynamically -->
+            </div>
+        </div>
+
+        <!-- Chat Page -->
+        <div class="chat-page" id="chat-page">
+            <div class="chat-header" id="chat-header">
+                <i class="fas fa-arrow-left chat-header-back" onclick="showPage('chat-list-page')"></i>
+                <img src="" alt="Friend Avatar" class="chat-header-avatar" id="chat-friend-avatar">
+                <div class="chat-header-info">
+                    <div class="chat-header-name" id="chat-friend-name">Friend Name</div>
+                    <div class="chat-header-status">
+                        <span class="status-indicator online" id="chat-status-indicator"></span>
+                        <span id="chat-friend-status">Online</span>
+                    </div>
+                    <div class="chat-header-note" id="chat-header-note" style="display: none; font-size: 0.9rem; color: var(--text-muted); margin-top: 5px;">
+                        <i class="fas fa-sticky-note"></i> <span id="chat-note-text"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages will be loaded here -->
+            </div>
+            
+            <div class="typing-indicator" id="typing-indicator">
+                <span id="typing-text"></span> is typing...
+            </div>
+            
+            <div class="chat-input-container">
+                <textarea class="chat-input" id="chat-input" placeholder="Type a message..."></textarea>
+                <button class="send-btn" id="send-btn">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+            </div>
+        </div>
+        
+        <!-- Search Page -->
+        <div class="list-page" id="search-page">
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="user-search-input" placeholder="Search users by name or email..." oninput="searchUsers()">
+                </div>
+            </div>
+            
+            <h2 class="list-title">Search Results</h2>
+            
+            <div class="search-results" id="search-results">
+                <!-- Search results will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Settings Page -->
+        <div class="settings-page" id="settings-page">
+            <h2 class="list-title">App Settings</h2>
+            
+            <div class="feature-card">
+                <h3>Theme Selection</h3>
+                <p>Choose an interface color scheme:</p>
+                
+                <div class="theme-options">
+                    <button class="theme-btn" data-theme="default" onclick="changeTheme('default')">
+                        <div class="theme-name">Default</div>
+                        <div class="theme-desc">Dark blue gradient</div>
+                    </button>
+                    
+                    <button class="theme-btn" data-theme="light" onclick="changeTheme('light')">
+                        <div class="theme-name">Light</div>
+                        <div class="theme-desc">Clean and bright</div>
+                    </button>
+                    
+                    <button class="theme-btn" data-theme="dark-blue" onclick="changeTheme('dark-blue')">
+                        <div class="theme-name">Dark Blue</div>
+                        <div class="theme-desc">Deep night theme</div>
+                    </button>
+                    
+                    <button class="theme-btn" data-theme="purple" onclick="changeTheme('purple')">
+                        <div class="theme-name">Purple</div>
+                        <div class="theme-desc">Royal purple tones</div>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Account Settings</h3>
+                <button class="auth-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Terms & Conditions</h3>
+                <p>By using Chat z, you agree to respect others' privacy and communicate responsibly. Any misuse may lead to account suspension. Be kind and enjoy connecting!</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Privacy Policy</h3>
+                <p>We protect your personal data and never share it without consent. Your messages are encrypted for security. We collect minimal data to improve your experience.</p>
+            </div>
+        </div>
+        
+        <!-- Notification Page -->
+        <div class="notification-page" id="notifications-page">
+            <h2 class="list-title">Notifications</h2>
+            
+            <div class="virtual-list" id="notifications-list">
+                <!-- Notifications will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Explore Page -->
+        <div class="list-page" id="explore-page" style="display: none;">
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="explore-search-input" placeholder="Search users..." oninput="searchExplore()">
+                </div>
+            </div>
+            
+            <h2 class="list-title">Top Users</h2>
+            
+            <div class="virtual-list" id="explore-list">
+                <!-- Top users will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Leaderboard Page -->
+        <div class="list-page" id="leaderboard-page" style="display: none;">
+            <h2 class="list-title">Top Influencers</h2>
+            
+            <div class="virtual-list" id="leaderboard-list">
+                <!-- Leaderboard will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Confessions Page -->
+        <div class="list-page" id="confessions-page" style="display: none;">
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="confession-search-input" placeholder="Search confessions..." oninput="searchConfessions()">
+                </div>
+            </div>
+            
+            <h2 class="list-title">Your Confessions</h2>
+            
+            <div class="virtual-list" id="confessions-list">
+                <!-- Confessions will be loaded here -->
+            </div>
+            
+            <button class="auth-btn" style="margin-top: 20px; width: 100%;" onclick="showComposeConfession()">
+                <i class="fas fa-plus"></i> New Confession
+            </button>
+        </div>
+
+        <!-- Compose Confession Page -->
+        <div class="edit-profile-page" id="compose-confession-page" style="display: none;">
+            <div class="edit-header">
+                <h2>Send Anonymous Confession</h2>
+                <p>Share your thoughts without revealing your identity</p>
+            </div>
+            
+            <div class="profile-form">
+                <div class="form-group">
+                    <label for="confession-recipient">To (Username or Email)</label>
+                    <input type="text" id="confession-recipient" class="form-control" placeholder="Enter username or email">
+                    <div id="recipient-results" class="search-results" style="margin-top: 10px;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confession-text">Your Message</label>
+                    <textarea id="confession-text" placeholder="Type your confession here..." style="min-height: 150px;"></textarea>
+                    <div class="word-count"><span id="confession-word-count">0</span>/200 words</div>
+                </div>
+                
+                <button class="save-btn" id="send-confession-btn">
+                    <i class="fas fa-paper-plane"></i> Send Confession
+                </button>
+                <div class="error-message" id="confession-error"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Menu -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" onclick="showPage('home-page')">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            
+            <button class="nav-btn" onclick="showPage('search-page')">
+                <i class="fas fa-search"></i>
+                <span>Search</span>
+            </button>
+            
+            <button class="nav-btn" onclick="showPage('chat-list-page')">
+                <i class="fas fa-comments"></i>
+                <span>Chat</span>
+            </button>
+            
+            <button class="nav-btn" onclick="showPage('profile-page')">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnS5bEqwCJHSwUkDbA3gWBRvL3o5OIrrw",
+            authDomain: "chat-app-b07dc.firebaseapp.com",
+            databaseURL: "https://chat-app-b07dc-default-rtdb.firebaseio.com",
+            projectId: "chat-app-b07dc",
+            storageBucket: "chat-app-b07dc.firebasestorage.app",
+            messagingSenderId: "366248300706",
+            appId: "1:366248300706:web:ca64e809e4f0ca52e747fb",
+            measurementId: "G-4JZ3MQ9J7M"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        
+        // Current user data
+        let currentUser = null;
+        let currentChatFriend = null;
+        let unreadMessages = {};
+        let allUsers = [];
+        let currentUserData = {};
+        let viewingUserId = null;
+        let lastTypingTime = {};
+        let typingTimeout = null;
+        let confessionRecipient = null;
+        
+        // Show auth page
+        function showAuthPage(pageId) {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('register-page').style.display = 'none';
+            document.getElementById(pageId).style.display = 'flex';
+            
+            // Clear errors
+            document.getElementById('login-error').textContent = '';
+            document.getElementById('register-error').textContent = '';
+        }
+        
+        // Page navigation
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = ['home-page', 'profile-page', 'edit-profile-page', 
+                         'friends-page', 'followers-page', 'chat-list-page', 
+                         'chat-page', 'search-page', 'settings-page', 'notifications-page',
+                         'explore-page', 'leaderboard-page', 'confessions-page', 'compose-confession-page'];
+            pages.forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            
+            // Show the requested page
+            if (pageId) {
+                document.getElementById(pageId).style.display = 'block';
+            }
+            
+            // Update active button
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Set active button based on page
+            if (pageId === 'home-page') {
+                document.querySelector('.bottom-nav .nav-btn:nth-child(1)').classList.add('active');
+                loadSuggestedFriends();
+            } else if (pageId === 'search-page') {
+                document.querySelector('.bottom-nav .nav-btn:nth-child(2)').classList.add('active');
+                document.getElementById('user-search-input').value = '';
+                document.getElementById('search-results').innerHTML = '<p class="subtitle" style="text-align: center; padding: 20px;">Search for users by name or email</p>';
+                loadAllUsers();
+            } else if (pageId === 'chat-list-page') {
+                document.querySelector('.bottom-nav .nav-btn:nth-child(3)').classList.add('active');
+                loadChatList();
+            } else if (pageId === 'profile-page') {
+                document.querySelector('.bottom-nav .nav-btn:nth-child(4)').classList.add('active');
+                viewingUserId = currentUser.uid;
+                loadProfile();
+                logProfileView();
+            } else if (pageId === 'notifications-page') {
+                loadNotifications();
+            } else if (pageId === 'explore-page') {
+                loadExplorePage();
+            } else if (pageId === 'leaderboard-page') {
+                loadLeaderboard();
+            } else if (pageId === 'confessions-page') {
+                loadConfessions();
+            }
+            
+            // Initialize lists if needed
+            if (pageId === 'friends-page') {
+                initFriendsList();
+            } else if (pageId === 'followers-page') {
+                initFollowersList();
+            }
+        }
+        
+        // Load user profile
+        function loadProfile() {
+            if (!currentUser) return;
+            
+            const userId = viewingUserId || currentUser.uid;
+            
+            // Load from Firebase
+            database.ref('users/' + userId).once('value').then((snapshot) => {
+                const userData = snapshot.val() || {};
+                currentUserData = userData;
+                
+                // Update UI
+                document.getElementById('username').textContent = userData.name || 'New User';
+                document.getElementById('user-bio').textContent = userData.bio || 'No bio yet';
+                document.getElementById('profile-pic').src = userData.profilePic || 'https://via.placeholder.com/150';
+                
+                // Update counts
+                const friendsCount = userData.friends ? Object.keys(userData.friends).length : 0;
+                const followersCount = userData.followers ? Object.keys(userData.followers).length : 0;
+                document.getElementById('friends-count').textContent = friendsCount;
+                document.getElementById('followers-count').textContent = followersCount;
+                document.getElementById('friends-count-title').textContent = friendsCount;
+                document.getElementById('followers-count-title').textContent = followersCount;
+                
+                // Update edit form if it's current user
+                if (userId === currentUser.uid) {
+                    document.getElementById('username-input').value = userData.name || '';
+                    document.getElementById('bio-input').value = userData.bio || '';
+                    document.getElementById('profile-pic-preview').src = userData.profilePic || 'https://via.placeholder.com/150';
+                    document.getElementById('note-input').value = userData.note || '';
+                    
+                    // Trigger word count
+                    document.getElementById('bio-input').dispatchEvent(new Event('input'));
+                    document.getElementById('note-input').dispatchEvent(new Event('input'));
+                }
+                
+                // Add verified badge if needed
+                if (followersCount >= 100) {
+                    document.getElementById('username').innerHTML = `${userData.name} <i class="fas fa-check-circle verified-badge"></i>`;
+                    database.ref('users/' + userId + '/verified').set(true);
+                }
+                
+                // Load note
+                if (userData.note) {
+                    document.getElementById('note-container').style.display = 'block';
+                    document.getElementById('user-note').textContent = userData.note;
+                    document.getElementById('profile-pic').classList.add('note-has-ring');
+                    
+                    // Only show reactions for current user's note
+                    if (userId === currentUser.uid) {
+                        loadNoteReactions(userId);
+                    }
+                } else {
+                    document.getElementById('note-container').style.display = 'none';
+                    document.getElementById('profile-pic').classList.remove('note-has-ring');
+                }
+                
+                // Load mutual friends if viewing another profile
+                if (userId !== currentUser.uid) {
+                    loadMutualFriends(userId);
+                } else {
+                    document.getElementById('mutual-friends-list').innerHTML = '';
+                }
+                
+                // Load profile views
+                loadProfileViews(userId);
+            });
+        }
+        
+        // Register new user
+        document.getElementById('register-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value || 'Your Name';
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const inviteCode = document.getElementById('invite-code').value;
+            const errorElement = document.getElementById('register-error');
+            
+            errorElement.textContent = '';
+            
+            if (password.length < 6) {
+                errorElement.textContent = 'Password must be at least 6 characters';
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // User created, now save additional info
+                    const user = userCredential.user;
+                    
+                    // Create user profile in database
+                    const userData = {
+                        name: name,
+                        email: email,
+                        profilePic: '', 
+                        bio: '',
+                        friends: {},
+                        followers: {},
+                        createdAt: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    
+                    // Track referral if invite code exists
+                    if (inviteCode) {
+                        database.ref('referrals/' + inviteCode + '/' + user.uid).set({
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        });
+                    }
+                    
+                    return database.ref('users/' + user.uid).set(userData);
+                })
+                .then(() => {
+                    // After profile created, show edit profile page
+                    showApp();
+                    showPage('edit-profile-page');
+                    
+                    // Clear registration form
+                    document.getElementById('register-name').value = '';
+                    document.getElementById('register-email').value = '';
+                    document.getElementById('register-password').value = '';
+                    document.getElementById('invite-code').value = '';
+                })
+                .catch((error) => {
+                    errorElement.textContent = error.message;
+                });
+        });
+        
+        // Login user
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorElement = document.getElementById('login-error');
+            
+            errorElement.textContent = '';
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    showApp();
+                    showPage('home-page');
+                    
+                    // Clear login form
+                    document.getElementById('login-email').value = '';
+                    document.getElementById('login-password').value = '';
+                })
+                .catch((error) => {
+                    errorElement.textContent = error.message;
+                });
+        });
+        
+        // Show the app content after auth
+        function showApp() {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('register-page').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+            loadAllUsers();
+            
+            // Apply saved theme
+            const savedTheme = localStorage.getItem('chatTheme') || 'default';
+            changeTheme(savedTheme, true);
+        }
+        
+        // Check auth state
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                currentUser = user;
+                showApp();
+                showPage('home-page');
+                loadProfile();
+                setupNotificationListener();
+                
+                // Set online status
+                database.ref('status/' + user.uid).set({
+                    isOnline: true,
+                    lastChanged: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                // Set up disconnect action
+                database.ref('.info/connected').on('value', function(snapshot) {
+                    if (snapshot.val() === false) return;
+                    
+                    const userStatusDatabaseRef = database.ref('status/' + user.uid);
+                    userStatusDatabaseRef.onDisconnect().set({
+                        isOnline: false,
+                        lastChanged: firebase.database.ServerValue.TIMESTAMP
+                    });
+                });
+            } else {
+                // No user is signed in
+                currentUser = null;
+                showAuthPage('login-page');
+            }
+        });
+        
+        // Profile edit functionality
+        document.getElementById('edit-profile-btn').addEventListener('click', function() {
+            viewingUserId = currentUser.uid;
+            showPage('edit-profile-page');
+        });
+        
+        // Word counter for bio
+        document.getElementById('bio-input').addEventListener('input', function() {
+            const bioText = this.value;
+            const wordCount = bioText.trim() === '' ? 0 : bioText.trim().split(/\s+/).length;
+            document.getElementById('word-count').textContent = wordCount;
+            
+            if (wordCount > 50) {
+                document.getElementById('word-count').style.color = '#ef4444';
+            } else {
+                document.getElementById('word-count').style.color = '#94a3b8';
+            }
+        });
+        
+        // Word counter for note
+        document.getElementById('note-input').addEventListener('input', function() {
+            const noteText = this.value;
+            const wordCount = noteText.trim() === '' ? 0 : noteText.trim().split(/\s+/).length;
+            document.getElementById('note-word-count').textContent = wordCount;
+            
+            if (wordCount > 100) {
+                document.getElementById('note-word-count').style.color = '#ef4444';
+            } else {
+                document.getElementById('note-word-count').style.color = '#94a3b8';
+            }
+        });
+        
+        // Profile picture preview
+        document.getElementById('profile-pic-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('profile-pic-preview').src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Save profile
+        document.getElementById('save-profile-btn').addEventListener('click', function() {
+            if (!currentUser) return;
+            
+            const newUsername = document.getElementById('username-input').value;
+            const newBio = document.getElementById('bio-input').value;
+            const newNote = document.getElementById('note-input').value;
+            const newProfilePic = document.getElementById('profile-pic-preview').src;
+            const errorElement = document.getElementById('profile-error');
+            
+            errorElement.textContent = '';
+            
+            if (!newUsername) {
+                errorElement.textContent = 'Please enter a username';
+                return;
+            }
+            
+            // Update in Firebase
+            database.ref('users/' + currentUser.uid).update({
+                name: newUsername,
+                bio: newBio,
+                note: newNote,
+                profilePic: newProfilePic
+            })
+            .then(() => {
+                // Update UI
+                document.getElementById('username').textContent = newUsername;
+                document.getElementById('user-bio').textContent = newBio;
+                document.getElementById('user-note').textContent = newNote;
+                document.getElementById('profile-pic').src = newProfilePic;
+                
+                // Add blue ring if note exists
+                if (newNote) {
+                    document.getElementById('profile-pic').classList.add('note-has-ring');
+                    document.getElementById('note-container').style.display = 'block';
+                } else {
+                    document.getElementById('profile-pic').classList.remove('note-has-ring');
+                    document.getElementById('note-container').style.display = 'none';
+                }
+                
+                // Switch back to profile page
+                showPage('profile-page');
+            })
+            .catch((error) => {
+                errorElement.textContent = error.message;
+            });
+        });
+        
+        // Load all users from Firebase
+        function loadAllUsers() {
+            database.ref('users').once('value').then((snapshot) => {
+                allUsers = [];
+                snapshot.forEach((childSnapshot) => {
+                    const user = childSnapshot.val();
+                    user.id = childSnapshot.key;
+                    
+                    // Skip current user
+                    if (user.id !== currentUser.uid) {
+                        allUsers.push(user);
+                    }
+                });
+                
+                // Update search page if it's active
+                if (document.getElementById('search-page').style.display === 'block') {
+                    searchUsers();
+                }
+            });
+        }
+        
+        // Search users by name or email
+        function searchUsers() {
+            const searchTerm = document.getElementById('user-search-input').value.toLowerCase();
+            const resultsContainer = document.getElementById('search-results');
+            
+            if (!searchTerm) {
+                resultsContainer.innerHTML = '<p class="subtitle" style="text-align: center; padding: 20px;">Search for users by name or email</p>';
+                return;
+            }
+            
+            const filteredUsers = allUsers.filter(user => 
+                (user.name && user.name.toLowerCase().includes(searchTerm)) || 
+                (user.email && user.email.toLowerCase().includes(searchTerm))
+            );
+            
+            if (filteredUsers.length === 0) {
+                resultsContainer.innerHTML = '<p class="subtitle" style="text-align: center; padding: 20px;">No users found</p>';
+                return;
+            }
+            
+            let resultsHTML = '';
+            filteredUsers.forEach(user => {
+                // Check if user is already a friend
+                const isFriend = user.friends && user.friends[currentUser.uid];
+                const isFollowing = currentUserData.friends && currentUserData.friends[user.id];
+                
+                resultsHTML += `
+                    <div class="user-result">
+                        <img src="${user.profilePic || 'https://via.placeholder.com/40'}" alt="${user.name}" class="user-result-avatar">
+                        <div class="user-result-info">
+                            <div class="user-result-name">
+                                ${user.name}
+                                ${user.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
+                            </div>
+                            <div class="user-result-email">${user.email}</div>
+                        </div>
+                        <button class="user-result-action ${isFollowing ? 'unfollow-btn' : ''}" 
+                                onclick="${isFollowing ? `unfollowUser('${user.id}')` : `followUser('${user.id}')`}">
+                            ${isFollowing ? 'Unfollow' : 'Follow'}
+                        </button>
+                    </div>
+                `;
+            });
+            
+            resultsContainer.innerHTML = resultsHTML;
+        }
+        
+        // Follow a user
+        function followUser(targetUserId) {
+            if (!currentUser) return;
+            
+            // Update current user's friends
+            const updates = {};
+            updates[`users/${currentUser.uid}/friends/${targetUserId}`] = true;
+            updates[`users/${targetUserId}/followers/${currentUser.uid}`] = true;
+            
+            database.ref().update(updates)
+            .then(() => {
+                // Add notification
+                addNotification(targetUserId, 'follow', `${currentUserData.name} started following you`);
+                
+                // Reload data
+                loadProfile();
+                loadAllUsers();
+                
+                // Update UI
+                if (document.getElementById('search-page').style.display === 'block') {
+                    searchUsers();
+                }
+                if (document.getElementById('home-page').style.display === 'block') {
+                    loadSuggestedFriends();
+                }
+            })
+            .catch((error) => {
+                console.error('Error following user:', error);
+            });
+        }
+        
+        // Unfollow a user
+        function unfollowUser(targetUserId) {
+            if (!currentUser) return;
+            
+            // Update current user's friends
+            const updates = {};
+            updates[`users/${currentUser.uid}/friends/${targetUserId}`] = null;
+            updates[`users/${targetUserId}/followers/${currentUser.uid}`] = null;
+            
+            database.ref().update(updates)
+            .then(() => {
+                // Add notification
+                addNotification(targetUserId, 'unfollow', `${currentUserData.name} unfollowed you`);
+                
+                // Reload data
+                loadProfile();
+                loadAllUsers();
+                
+                // Update UI
+                if (document.getElementById('search-page').style.display === 'block') {
+                    searchUsers();
+                }
+                if (document.getElementById('home-page').style.display === 'block') {
+                    loadSuggestedFriends();
+                }
+            })
+            .catch((error) => {
+                console.error('Error unfollowing user:', error);
+            });
+        }
+        
+        // Load suggested friends
+        function loadSuggestedFriends() {
+            const container = document.getElementById('suggested-friends');
+            
+            // Get 10 random users
+            const suggestedUsers = [...allUsers].sort(() => 0.5 - Math.random()).slice(0, 10);
+            
+            let html = '';
+            suggestedUsers.forEach(user => {
+                // Check if user is already a friend
+                const isFriend = user.friends && user.friends[currentUser.uid];
+                const isFollowing = currentUserData.friends && currentUserData.friends[user.id];
+                
+                html += `
+                    <div class="suggested-card">
+                        <img src="${user.profilePic || 'https://via.placeholder.com/70'}" alt="${user.name}" class="suggested-avatar">
+                        <div class="suggested-name">
+                            ${user.name}
+                            ${user.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
+                        </div>
+                        <div class="suggested-bio">${user.bio || 'Chat z user'}</div>
+                        <button class="suggested-btn" onclick="${isFollowing ? `unfollowUser('${user.id}')` : `followUser('${user.id}')`}">
+                            ${isFollowing ? 'Unfollow' : 'Follow'}
+                        </button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Initialize friends list
+        function initFriendsList() {
+            const friendsList = document.getElementById('friends-list');
+            friendsList.innerHTML = '';
+            
+            if (!currentUser) return;
+            
+            // Load current user's friends
+            database.ref(`users/${currentUser.uid}/friends`).once('value').then((snapshot) => {
+                const friends = snapshot.val() || {};
+                const friendIds = Object.keys(friends);
+                
+                if (friendIds.length === 0) {
+                    friendsList.innerHTML = '<p class="subtitle" style="text-align: center; padding: 20px;">You have no friends yet</p>';
+                    return;
+                }
+                
+                // Get friend details
+                friendIds.forEach(friendId => {
+                    database.ref(`users/${friendId}`).once('value').then((friendSnapshot) => {
+                        const friend = friendSnapshot.val();
+                        if (friend) {
+                            // Check online status
+                            database.ref('status/' + friendId).on('value', (statusSnapshot) => {
+                                const status = statusSnapshot.val();
+                                const isOnline = status && status.isOnline;
+                                
+                                const friendCard = document.createElement('div');
+                                friendCard.className = 'friend-card';
+                                friendCard.innerHTML = `
+                                    <img src="${friend.profilePic || 'https://via.placeholder.com/50'}" alt="${friend.name}" class="friend-avatar">
+                                    <div class="friend-info">
+                                        <div class="friend-name">
+                                            ${friend.name}
+                                            ${friend.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
+                                        </div>
+                                        <div class="friend-status">
+                                            <span class="status-indicator ${isOnline ? 'online' : 'offline'}"></span>
+                                            ${isOnline ? 'Online' : 'Offline'}
+                                        </div>
+                                    </div>
+                                    <button class="action-btn" onclick="startChatWithUser('${friendId}', '${friend.name}', '${friend.profilePic || 'https://via.placeholder.com/50'}', ${isOnline})">
+                                        <i class="fas fa-comment"></i>
+                                    </button>
+                                `;
+                                
+                                friendsList.appendChild(friendCard);
+                            });
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Initialize followers list
+        function initFollowersList() {
+            const followersList = document.getElementById('followers-list');
+            followersList.innerHTML = '';
+            
+            if (!currentUser) return;
+            
+            // Load current user's followers
+            database.ref(`users/${currentUser.uid}/followers`).once('value').then((snapshot) => {
+                const followers = snapshot.val() || {};
+                const followerIds = Object.keys(followers);
+                
+                if (followerIds.length === 0) {
+                    followersList.innerHTML = '<p class="subtitle" style="text-align: center; padding: 20px;">You have no followers yet</p>';
+                    return;
+                }
+                
+                // Get follower details
+                followerIds.forEach(followerId => {
+                    database.ref(`users/${followerId}`).once('value').then((followerSnapshot) => {
+                        const follower = followerSnapshot.val();
+                        if (follower) {
+                            // Check online status
+                            database.ref('status/' + followerId).on('value', (statusSnapshot) => {
+                                const status = statusSnapshot.val();
+                                const isOnline = status && status.isOnline;
+                                
+                                const followerCard = document.createElement('div');
+                                followerCard.className = 'friend-card';
+                                followerCard.innerHTML = `
+                                    <img src="${follower.profilePic || 'https://via.placeholder.com/50'}" alt="${follower.name}" class="friend-avatar">
+                                    <div class="friend-info">
+                                        <div class="friend-name">
+                                            ${follower.name}
+                                            ${follower.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
+                                        </div>
+                                        <div class="friend-status">
+                                            <span class="status-indicator ${isOnline ? 'online' : 'offline'}"></span>
+                                            ${isOnline ? 'Online' : 'Offline'}
+                                        </div>
+                                    </div>
+                                    <button class="action-btn" onclick="startChatWithUser('${followerId}', '${follower.name}', '${follower.profilePic || 'https://via.placeholder.com/50'}', ${isOnline})">
+                                        <i class="fas fa-comment"></i>
+                                    </button>
+                                `;
+                                
+                                followersList.appendChild(followerCard);
+                            });
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Load chat list
+        function loadChatList() {
+            const chatList = document.getElementById('chat-list');
+            chatList.innerHTML = '';
+            
+            if (!currentUser) return;
+            
+            // Load current user's chats
+            database.ref(`users/${currentUser.uid}/chats`).once('value').then((snapshot) => {
+                const chats = snapshot.val() || {};
+                const chatIds = Object.keys(chats);
+                
+                if (chatIds.length === 0) {
+                    chatList.innerHTML = '<p class="subtitle" style="text-align: center; padding: 20px;">No conversations yet</p>';
+                    return;
+                }
+                
+                // Get chat details
+                chatIds.forEach(chatId => {
+                    database.ref(`users/${chatId}`).once('value').then((userSnapshot) => {
+                        const user = userSnapshot.val();
+                        if (user) {
+                            // Get last message
+                            database.ref(`messages/${currentUser.uid}_${chatId}`)
+                                .orderByChild('timestamp')
+                                .limitToLast(1)
+                                .once('value')
+                                .then((messageSnapshot) => {
+                                    let lastMessage = 'Start a conversation';
+                                    let lastMessageTime = '';
+                                    
+                                    messageSnapshot.forEach((childSnapshot) => {
+                                        const message = childSnapshot.val();
+                                        lastMessage = message.text;
+                                        lastMessageTime = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                                    });
+                                    
+                                    const chatItem = document.createElement('div');
+                                    chatItem.className = 'friend-card';
+                                    chatItem.onclick = function() {
+                                        // Get online status
+                                        database.ref('status/' + chatId).once('value').then((statusSnapshot) => {
+                                            const status = statusSnapshot.val();
+                                            const isOnline = status && status.isOnline;
+                                            startChatWithUser(chatId, user.name, user.profilePic || 'https://via.placeholder.com/50', isOnline);
+                                        });
+                                    };
+                                    
+                                    chatItem.innerHTML = `
+                                        <img src="${user.profilePic || 'https://via.placeholder.com/50'}" alt="${user.name}" class="friend-avatar">
+                                        <div class="friend-info">
+                                            <div class="friend-name">
+                                                ${user.name}
+                                                ${user.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
+                                            </div>
+                                            <div class="friend-status">
+                                                ${lastMessage}
+                                            </div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div class="friend-status" style="margin-bottom: 5px;">${lastMessageTime}</div>
+                                        </div>
+                                    `;
+                                    
+                                    chatList.appendChild(chatItem);
+                                });
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Start chat with a user
+        function startChatWithUser(userId, userName, userAvatar, isOnline) {
+            currentChatFriend = {
+                id: userId,
+                name: userName,
+                avatar: userAvatar,
+                isOnline: isOnline
+            };
+            
+            // Update chat header
+            document.getElementById('chat-friend-name').textContent = userName;
+            document.getElementById('chat-friend-avatar').src = userAvatar;
+            document.getElementById('chat-friend-status').textContent = isOnline ? 'Online' : 'Offline';
+            document.getElementById('chat-status-indicator').className = `status-indicator ${isOnline ? 'online' : 'offline'}`;
+            
+            // Load friend's note
+            database.ref('users/' + userId + '/note').once('value').then((snapshot) => {
+                const note = snapshot.val();
+                if (note) {
+                    document.getElementById('chat-header-note').style.display = 'block';
+                    document.getElementById('chat-note-text').textContent = note;
+                } else {
+                    document.getElementById('chat-header-note').style.display = 'none';
+                }
+            });
+            
+            // Create chat reference if it doesn't exist
+            const chatRef = database.ref(`chats/${currentUser.uid}_${userId}`);
+            chatRef.set({
+                user1: currentUser.uid,
+                user2: userId,
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            });
+            
+            // Add chat to both users
+            database.ref(`users/${currentUser.uid}/chats/${userId}`).set(true);
+            database.ref(`users/${userId}/chats/${currentUser.uid}`).set(true);
+            
+            // Load messages
+            loadMessages(userId);
+            
+            // Setup typing indicator
+            setupChatTypingIndicator(userId);
+            
+            // Show chat page
+            showPage('chat-page');
+        }
+        
+        // Load messages for a chat
+        function loadMessages(friendId) {
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML = '';
+            
+            const chatId = currentUser.uid < friendId ? 
+                `${currentUser.uid}_${friendId}` : 
+                `${friendId}_${currentUser.uid}`;
+            
+            database.ref(`messages/${chatId}`)
+                .orderByChild('timestamp')
+                .on('value', (snapshot) => {
+                    chatMessages.innerHTML = '';
+                    snapshot.forEach((childSnapshot) => {
+                        const message = childSnapshot.val();
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `message ${message.sender === currentUser.uid ? 'message-outgoing' : 'message-incoming'}`;
+                        messageDiv.innerHTML = `
+                            ${message.text}
+                            <div class="message-time">${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                        `;
+                        chatMessages.appendChild(messageDiv);
+                    });
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+        }
+        
+        // Send message
+        document.getElementById('send-btn').addEventListener('click', sendMessage);
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const messageText = input.value.trim();
+            
+            if (messageText && currentChatFriend && currentUser) {
+                const chatId = currentUser.uid < currentChatFriend.id ? 
+                    `${currentUser.uid}_${currentChatFriend.id}` : 
+                    `${currentChatFriend.id}_${currentUser.uid}`;
+                
+                const newMessageRef = database.ref(`messages/${chatId}`).push();
+                newMessageRef.set({
+                    sender: currentUser.uid,
+                    text: messageText,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                // Add notification
+                addNotification(currentChatFriend.id, 'message', `${currentUserData.name} sent you a message`);
+                
+                // Clear input
+                input.value = '';
+            }
+        }
+        
+        // Change theme
+        function changeTheme(theme, initialLoad = false) {
+            // Remove existing theme classes
+            document.body.classList.remove('theme-light', 'theme-dark-blue', 'theme-purple');
+            
+            // Apply new theme
+            if (theme !== 'default') {
+                document.body.classList.add(`theme-${theme}`);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('chatTheme', theme);
+            
+            // Update active button
+            if (!initialLoad) {
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.theme === theme) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+        }
+        
+        // Logout function
+        function logout() {
+            // Set offline status
+            if (currentUser) {
+                database.ref('status/' + currentUser.uid).set({
+                    isOnline: false,
+                    lastChanged: firebase.database.ServerValue.TIMESTAMP
+                });
+            }
+            
+            auth.signOut().then(() => {
+                // Clear all app data
+                document.getElementById('app-content').style.display = 'none';
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-password').value = '';
+                showAuthPage('login-page');
+            });
+        }
+        
+        // =========================
+        // NEW FEATURE IMPLEMENTATIONS
+        // =========================
+        
+        // 1. Follow/Unfollow Toggle - Already implemented above
+        
+        // 2. Verified Badge - Already implemented in loadProfile
+        
+        // 3. Realtime Notifications
+        function setupNotificationListener() {
+            if (!currentUser) return;
+            
+            database.ref('users/' + currentUser.uid + '/notifications').orderByChild('timestamp').on('value', (snapshot) => {
+                const notifications = [];
+                let unreadCount = 0;
+                
+                snapshot.forEach((childSnapshot) => {
+                    const notif = childSnapshot.val();
+                    notif.id = childSnapshot.key;
+                    notifications.unshift(notif); // Show newest first
+                    
+                    if (!notif.read) {
+                        unreadCount++;
+                    }
+                });
+                
+                // Update badge
+                document.getElementById('notification-badge').textContent = unreadCount;
+                
+                // Update notifications page if open
+                if (document.getElementById('notifications-page').style.display === 'block') {
+                    renderNotifications(notifications);
+                }
+            });
+        }
+        
+        function addNotification(userId, type, message) {
+            const timestamp = Date.now();
+            const newNotificationRef = database.ref('users/' + userId + '/notifications').push();
+            newNotificationRef.set({
+                type: type,
+                message: message,
+                timestamp: timestamp,
+                read: false
+            });
+        }
+        
+        function loadNotifications() {
+            const container = document.getElementById('notifications-list');
+            container.innerHTML = '<p>Loading notifications...</p>';
+            
+            database.ref('users/' + currentUser.uid + '/notifications').orderByChild('timestamp').once('value').then(snapshot => {
+                const notifications = [];
+                snapshot.forEach(child => {
+                    const notif = child.val();
+                    notif.id = child.key;
+                    notifications.unshift(notif); // Newest first
+                });
+                
+                if (notifications.length === 0) {
+                    container.innerHTML = '<p class="subtitle" style="text-align: center; padding: 20px;">No notifications</p>';
+                    return;
+                }
+                
+                let html = '';
+                notifications.forEach(notif => {
+                    const timeAgo = formatTimeAgo(notif.timestamp);
+                    html += `
+                        <div class="notification-card ${notif.read ? '' : 'unread'}" data-id="${notif.id}">
+                            <div class="notification-header">
+                                <div class="notification-icon">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="notification-title">${notif.message}</div>
+                                <div class="notification-time">${timeAgo}</div>
+                            </div>
+                            <div class="notification-content">
+                                <button class="action-btn" onclick="markNotificationRead('${notif.id}')">
+                                    <i class="fas fa-check"></i> Mark as read
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            });
+        }
+        
+        function markNotificationRead(notifId) {
+            database.ref('users/' + currentUser.uid + '/notifications/' + notifId + '/read').set(true);
+        }
+        
+        // 4. Explore Page
+        function loadExplorePage() {
+            const container = document.getElementById('explore-list');
+            container.innerHTML = '<p>Loading top users...</p>';
+            
+            // Get all users
+            database.ref('users').once('value').then(snapshot => {
+                const users = [];
+                snapshot.forEach(child => {
+                    const user = child.val();
+                    user.id = child.key;
+                    if (user.id !== currentUser.uid) {
+                        user.followerCount = user.followers ? Object.keys(user.followers).length : 0;
+                        users.push(user);
+                    }
+                });
+                
+                // Sort by followers
+                users.sort((a, b) => b.followerCount - a.followerCount);
+                
+                // Render top 50
+                let html = '';
+                users.slice(0, 50).forEach(user => {
+                    const isFollowing = currentUserData.friends && currentUserData.friends[user.id];
+                    
+                    html += `
+                        <div class="friend-card">
+                            <img src="${user.profilePic || 'https://via.placeholder.com/50'}" alt="${user.name}" class="friend-avatar">
+                            <div class="friend-info">
+                                <div class="friend-name">
+                                    ${user.name}
+                                    ${user.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
+                                </div>
+                                <div class="friend-status">
+                                    <i class="fas fa-users"></i> ${user.followerCount} followers
+                                </div>
+                            </div>
+                            <button class="action-btn ${isFollowing ? 'unfollow-btn' : ''}" 
+                                    onclick="${isFollowing ? `unfollowUser('${user.id}')` : `followUser('${user.id}')`}">
+                                ${isFollowing ? '<i class="fas fa-user-minus"></i>' : '<i class="fas fa-user-plus"></i>'}
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            });
+        }
+        
+        // 5. Profile Views
+        function logProfileView() {
+            if (!currentUser || !viewingUserId || viewingUserId === currentUser.uid) return;
+            
+            const timestamp = Date.now();
+            database.ref(`users/${viewingUserId}/profileViews/${currentUser.uid}`).set(timestamp);
+        }
+        
+        function loadProfileViews(userId) {
+            const container = document.getElementById('profile-views-list');
+            container.innerHTML = '';
+            
+            database.ref(`users/${userId}/profileViews`).orderByValue().limitToLast(5).once('value').then(snapshot => {
+                const viewers = [];
+                snapshot.forEach(child => {
+                    viewers.push({
+                        id: child.key,
+                        timestamp: child.val()
+                    });
+                });
+                
+                if (viewers.length === 0) {
+                    container.innerHTML = '<p>No recent views</p>';
+                    return;
+                }
+                
+                // Get viewer details
+                let processed = 0;
+                viewers.reverse().forEach(viewer => {
+                    database.ref('users/' + viewer.id).once('value').then(userSnap => {
+                        const user = userSnap.val();
+                        if (user) {
+                            const timeAgo = formatTimeAgo(viewer.timestamp);
+                            const viewerEl = document.createElement('div');
+                            viewerEl.className = 'viewer-card';
+                            viewerEl.innerHTML = `
+                                <img src="${user.profilePic || 'https://via.placeholder.com/40'}" class="viewer-avatar">
+                                <div>
+                                    <div>${user.name}</div>
+                                    <div class="friend-status">${timeAgo}</div>
+                                </div>
+                            `;
+                            container.appendChild(viewerEl);
+                        }
+                        processed++;
+                        if (processed === viewers.length && container.children.length === 0) {
+                            container.innerHTML = '<p>No recent views</p>';
+                        }
+                    });
+                });
+            });
+        }
+        
+        // 6. Note System - Already implemented in profile and edit profile
+        
+        // 7. Mutual Friends
+        function loadMutualFriends(targetUserId) {
+            const container = document.getElementById('mutual-friends-list');
+            container.innerHTML = '';
+            
+            Promise.all([
+                database.ref(`users/${currentUser.uid}/friends`).once('value'),
+                database.ref(`users/${targetUserId}/friends`).once('value')
+            ]).then(([currentFriendsSnap, targetFriendsSnap]) => {
+                const currentFriends = currentFriendsSnap.val() || {};
+                const targetFriends = targetFriendsSnap.val() || {};
+                
+                const mutualIds = Object.keys(currentFriends).filter(id => 
+                    id in targetFriends && id !== currentUser.uid && id !== targetUserId
+                );
+                
+                if (mutualIds.length === 0) {
+                    container.innerHTML = '<p>No mutual friends</p>';
+                    return;
+                }
+                
+                // Get mutual friend details
+                mutualIds.forEach(friendId => {
+                    database.ref('users/' + friendId).once('value').then(snap => {
+                        const user = snap.val();
+                        if (user) {
+                            const friendEl = document.createElement('div');
+                            friendEl.className = 'mutual-friend';
+                            friendEl.innerHTML = `
+                                <img src="${user.profilePic || 'https://via.placeholder.com/30'}" 
+                                     style="width:20px;height:20px;border-radius:50%;margin-right:5px;">
+                                ${user.name.split(' ')[0]}
+                            `;
+                            container.appendChild(friendEl);
+                        }
+                    });
+                });
+            });
+        }
+        
+        // 8. Confession Box
+        function showComposeConfession() {
+            document.getElementById('recipient-results').innerHTML = '';
+            document.getElementById('confession-recipient').value = '';
+            document.getElementById('confession-text').value = '';
+            document.getElementById('confession-error').textContent = '';
+            showPage('compose-confession-page');
+        }
+        
+        document.getElementById('confession-recipient').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const resultsContainer = document.getElementById('recipient-results');
+            
+            if (!searchTerm) {
+                resultsContainer.innerHTML = '';
+                return;
+            }
+            
+            const filteredUsers = allUsers.filter(user => 
+                (user.name && user.name.toLowerCase().includes(searchTerm)) || 
+                (user.email && user.email.toLowerCase().includes(searchTerm))
+            );
+            
+            if (filteredUsers.length === 0) {
+                resultsContainer.innerHTML = '<p class="subtitle" style="text-align: center; padding: 10px;">No users found</p>';
+                return;
+            }
+            
+            let resultsHTML = '';
+            filteredUsers.forEach(user => {
+                resultsHTML += `
+                    <div class="user-result" onclick="selectConfessionRecipient('${user.id}', '${user.name}')">
+                        <img src="${user.profilePic || 'https://via.placeholder.com/40'}" alt="${user.name}" class="user-result-avatar">
+                        <div class="user-result-info">
+                            <div class="user-result-name">${user.name}</div>
+                            <div class="user-result-email">${user.email}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsContainer.innerHTML = resultsHTML;
+        });
+        
+        function selectConfessionRecipient(userId, userName) {
+            confessionRecipient = userId;
+            document.getElementById('confession-recipient').value = userName;
+            document.getElementById('recipient-results').innerHTML = '';
+        }
+        
+        document.getElementById('send-confession-btn').addEventListener('click', function() {
+            const message = document.getElementById('confession-text').value.trim();
+            const errorElement = document.getElementById('confession-error');
+            
+            errorElement.textContent = '';
+            
+            if (!confessionRecipient) {
+                errorElement.textContent = 'Please select a recipient';
+                return;
+            }
+            
+            if (!message) {
+                errorElement.textContent = 'Please enter a message';
+                return;
+            }
+            
+            const newConfessionRef = database.ref(`confessions/${confessionRecipient}`).push();
+            newConfessionRef.set({
+                sender: 'anonymous',
+                message: message,
+                timestamp: Date.now()
+            }).then(() => {
+                // Add notification
+                addNotification(confessionRecipient, 'confession', 'You received an anonymous confession');
+                
+                // Show success
+                errorElement.textContent = 'Confession sent!';
+                errorElement.style.color = 'var(--success)';
+                
+                // Clear form
+                setTimeout(() => {
+                    showPage('confessions-page');
+                }, 1500);
+            });
+        });
+        
+        function loadConfessions() {
+            const container = document.getElementById('confessions-list');
+            container.innerHTML = '<p>Loading confessions...</p>';
+            
+            // Load received confessions
+            database.ref(`confessions/${currentUser.uid}`).orderByChild('timestamp').once('value').then(snapshot => {
+                const confessions = [];
+                snapshot.forEach(child => {
+                    const conf = child.val();
+                    conf.id = child.key;
+                    confessions.unshift(conf); // Newest first
+                });
+                
+                if (confessions.length === 0) {
+                    container.innerHTML = '<p class="subtitle" style="text-align: center; padding: 20px;">No confessions yet</p>';
+                    return;
+                }
+                
+                let html = '';
+                confessions.forEach(conf => {
+                    const timeAgo = formatTimeAgo(conf.timestamp);
+                    html += `
+                        <div class="confession-card">
+                            <div class="notification-header">
+                                <div class="notification-icon" style="background: #8b5cf6;">
+                                    <i class="fas fa-user-secret"></i>
+                                </div>
+                                <div class="notification-title">Anonymous</div>
+                                <div class="notification-time">${timeAgo}</div>
+                            </div>
+                            <div class="notification-content">${conf.message}</div>
+                            ${conf.reply ? `
+                                <div class="confession-reply">
+                                    <div><strong>Your reply:</strong></div>
+                                    <div>${conf.reply}</div>
+                                </div>
+                            ` : `
+                                <div class="confession-reply">
+                                    <textarea class="form-input" id="reply-${conf.id}" 
+                                              placeholder="Type your reply..." style="margin-top:10px;"></textarea>
+                                    <button class="auth-btn" style="margin-top:5px;" 
+                                            onclick="sendConfessionReply('${conf.id}')">
+                                        Send Reply
+                                    </button>
+                                </div>
+                            `}
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            });
+        }
+        
+        function sendConfessionReply(confessionId) {
+            const replyText = document.getElementById(`reply-${confessionId}`).value.trim();
+            if (!replyText) return;
+            
+            database.ref(`confessions/${currentUser.uid}/${confessionId}/reply`).set(replyText)
+                .then(() => {
+                    loadConfessions();
+                });
+        }
+        
+        // 9. Invite System - Already implemented in registration
+        
+        // 10. Leaderboard
+        function loadLeaderboard() {
+            const container = document.getElementById('leaderboard-list');
+            container.innerHTML = '<p>Loading leaderboard...</p>';
+            
+            database.ref('users').once('value').then(snapshot => {
+                const users = [];
+                snapshot.forEach(child => {
+                    const user = child.val();
+                    user.id = child.key;
+                    user.followerCount = user.followers ? Object.keys(user.followers).length : 0;
+                    users.push(user);
+                });
+                
+                // Sort by followers
+                users.sort((a, b) => b.followerCount - a.followerCount);
+                
+                let html = '';
+                users.slice(0, 10).forEach((user, index) => {
+                    const isFollowing = currentUserData.friends && currentUserData.friends[user.id];
+                    
+                    html += `
+                        <div class="leaderboard-card">
+                            <div class="leaderboard-rank">${index + 1}</div>
+                            <img src="${user.profilePic || 'https://via.placeholder.com/50'}" 
+                                 style="width:40px;height:40px;border-radius:50%;margin-right:15px;">
+                            <div style="flex:1;">
+                                <div class="friend-name">
+                                    ${user.name}
+                                    ${user.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
+                                </div>
+                                <div class="friend-status">
+                                    <i class="fas fa-users"></i> ${user.followerCount} followers
+                                </div>
+                            </div>
+                            ${user.id !== currentUser.uid ? `
+                                <button class="action-btn" onclick="${isFollowing ? `unfollowUser('${user.id}')` : `followUser('${user.id}')`}">
+                                    ${isFollowing ? '<i class="fas fa-user-minus"></i>' : '<i class="fas fa-user-plus"></i>'}
+                                </button>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            });
+        }
+        
+        // 11. Typing & Last Seen
+        function setupChatTypingIndicator(friendId) {
+            const chatId = currentUser.uid < friendId ? 
+                `${currentUser.uid}_${friendId}` : 
+                `${friendId}_${currentUser.uid}`;
+                
+            // Listen for friend typing
+            database.ref(`typing/${chatId}/${friendId}`).on('value', snapshot => {
+                const isTyping = snapshot.val();
+                const indicator = document.getElementById('typing-indicator');
+                if (isTyping) {
+                    document.getElementById('typing-text').textContent = currentChatFriend.name;
+                    indicator.style.display = 'block';
+                } else {
+                    indicator.style.display = 'none';
+                }
+            });
+            
+            // Setup typing detection for current user
+            document.getElementById('chat-input').addEventListener('input', function() {
+                if (this.value) {
+                    // Update typing status
+                    database.ref(`typing/${chatId}/${currentUser.uid}`).set(true);
+                    
+                    // Reset the "not typing" timeout
+                    clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => {
+                        database.ref(`typing/${chatId}/${currentUser.uid}`).set(false);
+                    }, 1500);
+                } else {
+                    database.ref(`typing/${chatId}/${currentUser.uid}`).set(false);
+                }
+            });
+        }
+        
+        // 12. Reaction System
+        function loadNoteReactions(userId) {
+            const container = document.getElementById('note-reactions');
+            container.innerHTML = '';
+            
+            database.ref(`users/${userId}/noteReactions`).once('value').then(snapshot => {
+                const reactions = {};
+                let totalReactions = 0;
+                
+                snapshot.forEach(child => {
+                    const reaction = child.val().reaction;
+                    reactions[reaction] = (reactions[reaction] || 0) + 1;
+                    totalReactions++;
+                });
+                
+                if (totalReactions === 0) {
+                    container.innerHTML = '<div>No reactions yet</div>';
+                    return;
+                }
+                
+                // Show most popular reactions
+                Object.entries(reactions).forEach(([emoji, count]) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'reaction-btn';
+                    btn.innerHTML = `${emoji} <span class="reaction-count">${count}</span>`;
+                    btn.onclick = () => addReactionToNote(userId, emoji);
+                    container.appendChild(btn);
+                });
+            });
+        }
+        
+        function addReactionToNote(userId, reaction) {
+            database.ref(`users/${userId}/noteReactions/${currentUser.uid}`).set({
+                reaction: reaction,
+                timestamp: Date.now()
+            }).then(() => {
+                loadNoteReactions(userId);
+            });
+        }
+        
+        // Utility function
+        function formatTimeAgo(timestamp) {
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            if (seconds < 60) return 'Just now';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+            const days = Math.floor(hours / 24);
+            return `${days}d ago`;
+        }
+        
+        // Show login page by default
+        showAuthPage('login-page');
+    </script>
+</body>
+</html>
